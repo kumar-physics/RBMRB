@@ -1,8 +1,8 @@
 Package: RBMRB
 Type: Package
 Title: BMRB Data Access and Visualization
-Version: 2.1.4
-Date: 2020-10-25
+Version: 2.1.6
+Date: 2020-11-12
 Author: Kumaran Baskaran
 Maintainer: Kumaran Baskaran<baskaran.kumaran@gmail.com>
 Description: The Biological Magnetic Resonance Data Bank (BMRB,<http://
