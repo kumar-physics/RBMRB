@@ -17,7 +17,7 @@ Depends:
     R(>= 3.4.0),
 License: GPL-2
 URL: https://github.com/uwbmrb/RBMRB, https://github.com/kumar-physics/RBMRB
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports:
     data.table(>= 1.9.8),
     httr(>= 1.2.1),
