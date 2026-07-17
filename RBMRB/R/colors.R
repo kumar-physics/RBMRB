@@ -47,15 +47,26 @@
 )
 
 # Map a proton atom name to its directly bonded carbon (for C13-HSQC)
+.NUMBERED_CARBONS <- c("CG1","CG2","CD1","CD2","CE1","CE2","CE3",
+                        "CZ1","CZ2","CZ3","CH2")
+
+# Map a proton atom name to its directly bonded carbon (for C13-HSQC).
+# Handles: methyls (HG11->CG1), methylenes (HB2->CB),
+#          and aromatic/ring protons (HE2->CE2, HD1->CD1).
 .h_to_c <- function(atom_h) {
   if (!startsWith(atom_h, "H")) return(NA_character_)
   rest <- substring(atom_h, 2L)
-  # Methyl: HXY{1|2|3} --> CXY  e.g. HG11 --> CG1
+  # Methyl: H{X}{Y}{1|2|3} -> C{X}{Y}  e.g. HG11->CG1, HD21->CD2
   if (nchar(rest) == 3L && grepl("^[A-Z][0-9][123]$", rest))
     return(paste0("C", substring(rest, 1L, 2L)))
-  # Methylene: HX{2|3} --> CX  e.g. HB2 --> CB
-  if (nchar(rest) == 2L && grepl("^[A-Z][23]$", rest))
+  # 2-char suffix (e.g. E2, D1, B2, B3):
+  # If the C+suffix is a known numbered carbon (aromatic/ring) keep it,
+  # otherwise strip the digit (methylene).  HE2->CE2, HB2->CB.
+  if (nchar(rest) == 2L && grepl("^[A-Z][0-9]$", rest)) {
+    candidate <- paste0("C", rest)
+    if (candidate %in% .NUMBERED_CARBONS) return(candidate)
     return(paste0("C", substring(rest, 1L, 1L)))
-  # Simple / aromatic: HA --> CA, HD1 --> CD1, HE2 --> CE2
+  }
+  # Simple or 2-char letter names: HA->CA, HB->CB, HD1->CD1
   paste0("C", rest)
 }

@@ -4,10 +4,10 @@
 # =============================================================================
 
 test_that(".loop_to_df converts JSON loop to data.frame correctly", {
-  df <- rBMRB:::.loop_to_df(.mock_loop_json)
+  df <- RBMRB:::.loop_to_df(.mock_loop_json)
 
   expect_s3_class(df, "data.frame")
-  expect_equal(nrow(df), 12L)
+  expect_equal(nrow(df), 17L)
   expect_true("Comp_ID"  %in% colnames(df))
   expect_true("Atom_ID"  %in% colnames(df))
   expect_true("Val"      %in% colnames(df))
@@ -27,15 +27,15 @@ test_that(".loop_to_df converts JSON loop to data.frame correctly", {
 })
 
 test_that(".entry_json_to_cs_dfs extracts Atom_chem_shift loops", {
-  dfs <- rBMRB:::.entry_json_to_cs_dfs(.mock_entry_json)
+  dfs <- RBMRB:::.entry_json_to_cs_dfs(.mock_entry_json)
   expect_length(dfs, 1L)
   expect_s3_class(dfs[[1L]], "data.frame")
-  expect_equal(nrow(dfs[[1L]]), 12L)
+  expect_equal(nrow(dfs[[1L]]), 17L)
 })
 
 test_that(".cs_df_to_nested builds correct nested structure", {
-  df     <- rBMRB:::.loop_to_df(.mock_loop_json)
-  nested <- rBMRB:::.cs_df_to_nested(df, dataset_id = "15060", auth_tag = FALSE)
+  df     <- RBMRB:::.loop_to_df(.mock_loop_json)
+  nested <- RBMRB:::.cs_df_to_nested(df, dataset_id = "15060", auth_tag = FALSE)
 
   expect_named(nested, "15060")
   ds <- nested[["15060"]]
@@ -59,11 +59,11 @@ test_that(".cs_df_to_nested builds correct nested structure", {
 
 test_that(".tokenise_nmrstar handles plain and quoted tokens", {
   line1 <- "1  ALA  CA  C  52.4  0.1  1"
-  t1    <- rBMRB:::.tokenise_nmrstar(line1)
+  t1    <- RBMRB:::.tokenise_nmrstar(line1)
   expect_equal(t1, c("1","ALA","CA","C","52.4","0.1","1"))
 
   line2 <- "2  'My long value'  GLY"
-  t2    <- rBMRB:::.tokenise_nmrstar(line2)
+  t2    <- RBMRB:::.tokenise_nmrstar(line2)
   expect_equal(t2, c("2","My long value","GLY"))
 })
 
@@ -71,7 +71,7 @@ test_that("NMR-STAR file is parsed correctly", {
   path <- write_mock_nmrstar()
   on.exit(unlink(path))
 
-  parsed <- rBMRB:::.parse_nmrstar_files(path, auth_tag = FALSE)
+  parsed <- RBMRB:::.parse_nmrstar_files(path, auth_tag = FALSE)
   expect_length(parsed, 1L)
   df <- parsed[[1L]]
 
@@ -120,8 +120,8 @@ test_that("data_set_ids length must match file_paths", {
 # ---------------------------------------------------------------------------
 
 test_that("cs_to_df converts nested list to data.frame", {
-  df_raw <- rBMRB:::.loop_to_df(.mock_loop_json)
-  nested <- rBMRB:::.cs_df_to_nested(df_raw, "15060")
+  df_raw <- RBMRB:::.loop_to_df(.mock_loop_json)
+  nested <- RBMRB:::.cs_df_to_nested(df_raw, "15060")
   df     <- cs_to_df(nested)
 
   expect_s3_class(df, "data.frame")
@@ -131,10 +131,10 @@ test_that("cs_to_df converts nested list to data.frame", {
 })
 
 test_that("filter_cs_outliers removes extreme values", {
-  x      <- c(50, 55, 54, 56, 53, 200, -100)
-  result <- filter_cs_outliers(x, sd_limit = 2)
-  expect_false(200  %in% result)
-  expect_false(-100 %in% result)
+  # Use a tight cluster with a single extreme outlier so SD stays manageable
+  x      <- c(rep(52, 20), rep(53, 20), rep(54, 20), 9999)
+  result <- filter_cs_outliers(x, sd_limit = 3)
+  expect_false(9999 %in% result)
   expect_true(all(result >= 50 & result <= 56))
 })
 

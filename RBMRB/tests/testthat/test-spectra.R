@@ -22,7 +22,7 @@ test_that("create_n15hsqc_peaklist correctly pairs H and N atoms", {
     {
       pl <- create_n15hsqc_peaklist(bmrb_ids = "15060")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
 
   expect_false(is.null(pl))
@@ -47,7 +47,7 @@ test_that("create_n15hsqc_peaklist with draw_trace returns cs_track", {
       pl <- create_n15hsqc_peaklist(bmrb_ids = c("15060","99999"),
                                     draw_trace = TRUE)
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_false(is.null(pl))
   expect_type(pl$cs_track, "list")
@@ -59,7 +59,7 @@ test_that("create_n15hsqc_peaklist returns NULL when no data", {
     {
       pl <- create_n15hsqc_peaklist(bmrb_ids = "00000")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_null(pl)
 })
@@ -76,7 +76,7 @@ test_that("create_c13hsqc_peaklist correctly pairs H and C atoms", {
     {
       pl <- create_c13hsqc_peaklist(bmrb_ids = "15060")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
 
   expect_false(is.null(pl))
@@ -88,16 +88,16 @@ test_that("create_c13hsqc_peaklist correctly pairs H and C atoms", {
 })
 
 test_that(".h_to_c maps hydrogen atoms to correct carbons", {
-  expect_equal(rBMRB:::.h_to_c("HA"),    "CA")
-  expect_equal(rBMRB:::.h_to_c("HB2"),   "CB")
-  expect_equal(rBMRB:::.h_to_c("HB3"),   "CB")
-  expect_equal(rBMRB:::.h_to_c("HG11"),  "CG1")
-  expect_equal(rBMRB:::.h_to_c("HG12"),  "CG1")
-  expect_equal(rBMRB:::.h_to_c("HG21"),  "CG2")
-  expect_equal(rBMRB:::.h_to_c("HD1"),   "CD1")
-  expect_equal(rBMRB:::.h_to_c("HE2"),   "CE2")
-  expect_equal(rBMRB:::.h_to_c("HZ"),    "CZ")
-  expect_true(is.na(rBMRB:::.h_to_c("N")))   # not a H atom
+  expect_equal(RBMRB:::.h_to_c("HA"),    "CA")
+  expect_equal(RBMRB:::.h_to_c("HB2"),   "CB")
+  expect_equal(RBMRB:::.h_to_c("HB3"),   "CB")
+  expect_equal(RBMRB:::.h_to_c("HG11"),  "CG1")
+  expect_equal(RBMRB:::.h_to_c("HG12"),  "CG1")
+  expect_equal(RBMRB:::.h_to_c("HG21"),  "CG2")
+  expect_equal(RBMRB:::.h_to_c("HD1"),   "CD1")
+  expect_equal(RBMRB:::.h_to_c("HE2"),   "CE2")
+  expect_equal(RBMRB:::.h_to_c("HZ"),    "CZ")
+  expect_true(is.na(RBMRB:::.h_to_c("N")))   # not a H atom
 })
 
 # ---------------------------------------------------------------------------
@@ -112,7 +112,7 @@ test_that("create_tocsy_peaklist generates symmetric H-H pairs", {
     {
       pl <- create_tocsy_peaklist(bmrb_ids = "15060")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
 
   expect_false(is.null(pl))
@@ -137,7 +137,7 @@ test_that("create_2d_peaklist extracts any atom pair", {
     {
       pl <- create_2d_peaklist("N", "CA", bmrb_ids = "15060")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
 
   expect_false(is.null(pl))
@@ -161,7 +161,7 @@ test_that("create_2d_peaklist with include_next adds extra peaks", {
       pl_next <- create_2d_peaklist("N", "CA", bmrb_ids = "15060",
                                      include_next = TRUE)
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
 
   # With include_next we should get more peaks
@@ -182,7 +182,7 @@ test_that("export_peak_list writes a valid CSV file", {
     {
       pl <- create_n15hsqc_peaklist(bmrb_ids = "15060")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
 
   out <- export_peak_list(pl, output_file_name = tmp, output_format = "csv")
@@ -203,7 +203,7 @@ test_that("export_peak_list writes a valid Sparky file", {
     {
       pl <- create_n15hsqc_peaklist(bmrb_ids = "15060")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
 
   export_peak_list(pl, output_file_name = tmp, output_format = "sparky")
@@ -219,7 +219,7 @@ test_that("export_peak_list returns a data.frame invisibly", {
     {
       pl <- create_n15hsqc_peaklist(bmrb_ids = "15060")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   out <- export_peak_list(pl)
   expect_s3_class(out, "data.frame")
@@ -238,10 +238,10 @@ test_that(".build_walk produces correct segments", {
     seq_id  = c("1", "2", "3", "5"),
     residue = c("LEU","VAL","ALA","GLY")
   )
-  segs <- rBMRB:::.build_walk(pl, full_walk = FALSE)
+  segs <- RBMRB:::.build_walk(pl, full_walk = FALSE)
   # Gap between seq 3 and 5 → should produce 2 segments (1→2, 2→3), not 3→5
   expect_equal(length(segs), 2L)
 
-  segs_full <- rBMRB:::.build_walk(pl, full_walk = TRUE)
+  segs_full <- RBMRB:::.build_walk(pl, full_walk = TRUE)
   expect_equal(length(segs_full), 3L)
 })

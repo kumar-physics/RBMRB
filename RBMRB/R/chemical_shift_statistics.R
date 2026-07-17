@@ -71,16 +71,19 @@ get_cs_data <- function(residue = "*",
   )
   if (is.null(raw)) return(data.frame())
 
-  # The API returns {"columns":[...],"data":[[...],...]}
-  # "columns" uses dotted names like "Atom_chem_shift.Val"
-  if (is.null(raw$columns) || is.null(raw$data)) {
+  # The API may return either:
+  #   {"columns": [...], "data": [...]}  (newer format)
+  #   {"tags":    [...], "data": [...]}  (older format)
+  # Both use dotted names like "Atom_chem_shift.Val" for columns/tags.
+  col_key <- names(raw)[names(raw) %in% c("columns", "tags")]
+  if (length(col_key) == 0L || is.null(raw$data)) {
     cli::cli_alert_warning(
-      "Unexpected response keys: {paste(names(raw),collapse=',')}. ",
-      "Expected 'columns' and 'data'.")
+      "Unexpected response keys: {paste(names(raw), collapse=',')}.")
     return(data.frame())
   }
+  col_key <- col_key[[1L]]
 
-  cols <- unlist(raw$columns, use.names = FALSE)
+  cols <- unlist(raw[[col_key]], use.names = FALSE)
   rows <- raw$data
 
   if (length(rows) == 0L) {
@@ -229,5 +232,28 @@ get_cs_from_bmrb_db <- function(residue = "*", atom = "*",
   mu   <- mean(vals, na.rm = TRUE)
   sig  <- stats::sd(vals, na.rm = TRUE)
   if (is.na(sig) || sig == 0) return(df)
-  df[!is.na(vals) & vals >= mu - sd_limit*sig & vals <= mu + sd_limit*sig, ]
+  keep <- !is.na(vals) & vals >= mu - sd_limit*sig & vals <= mu + sd_limit*sig
+  df[keep, , drop = FALSE]
+}
+
+.standardise_cs_cols <- function(cols) {
+  map <- c(
+    entry_id              = "Entry_ID",
+    entity_assembly_id    = "Entity_assembly_ID",
+    comp_index_id         = "Comp_index_ID",
+    comp_id               = "Comp_ID",
+    atom_id               = "Atom_ID",
+    atom_type             = "Atom_type",
+    val                   = "Val",
+    val_err               = "Val_err",
+    ambiguity_code        = "Ambiguity_code",
+    assigned_chem_shift_list_id = "Assigned_chem_shift_list_ID",
+    ph                    = "pH",
+    temperature           = "Temperature",
+    temperature_k         = "Temperature_K"
+  )
+  lc <- tolower(cols)
+  for (i in seq_along(cols))
+    if (lc[[i]] %in% names(map)) cols[[i]] <- map[[lc[[i]]]]
+  cols
 }

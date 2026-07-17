@@ -83,9 +83,12 @@ cs_to_df <- function(cs_data) {
 #' @export
 #' @examples filter_cs_outliers(c(52, 55, 56, 54, 300), sd_limit = 2)
 filter_cs_outliers <- function(x, sd_limit = 10) {
-  mu  <- mean(x, na.rm=TRUE)
-  sig <- stats::sd(x, na.rm=TRUE)
-  x[!is.na(x) & x >= mu - sd_limit*sig & x <= mu + sd_limit*sig]
+  x   <- x[!is.na(x)]
+  if (length(x) < 2L) return(x)
+  mu  <- mean(x)
+  sig <- stats::sd(x)
+  if (is.na(sig) || sig == 0) return(x)
+  x[x >= mu - sd_limit * sig & x <= mu + sd_limit * sig]
 }
 
 #' Compute summary statistics for a set of chemical shifts

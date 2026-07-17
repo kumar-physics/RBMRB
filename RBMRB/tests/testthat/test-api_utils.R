@@ -9,7 +9,7 @@ test_that("bmrb_list_entries returns a character vector", {
     {
       ids <- bmrb_list_entries("macromolecules")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_type(ids, "character")
   expect_true(length(ids) >= 1L)
@@ -31,7 +31,7 @@ test_that("bmrb_search returns a data.frame", {
     {
       df <- bmrb_search("ubiquitin")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_s3_class(df, "data.frame")
   expect_true("value"    %in% colnames(df))
@@ -46,7 +46,7 @@ test_that("bmrb_search returns empty data.frame for no results", {
     {
       df <- bmrb_search("zzznotfound")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_s3_class(df, "data.frame")
   expect_equal(nrow(df), 0L)
@@ -62,7 +62,7 @@ test_that("bmrb_pdb_ids returns a data.frame with correct columns", {
     {
       df <- bmrb_pdb_ids(15000)
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_s3_class(df, "data.frame")
   expect_named(df, c("pdb_id","match_type","comment"))
@@ -76,7 +76,7 @@ test_that("bmrb_pdb_ids returns empty data.frame when no PDB links", {
     {
       df <- bmrb_pdb_ids(99999)
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_s3_class(df, "data.frame")
   expect_equal(nrow(df), 0L)
@@ -91,7 +91,7 @@ test_that("bmrb_from_pdb returns a data.frame with correct columns", {
     {
       df <- bmrb_from_pdb("2JM0")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_s3_class(df, "data.frame")
   expect_named(df, c("bmrb_id","match_type","comment"))
@@ -99,21 +99,21 @@ test_that("bmrb_from_pdb returns a data.frame with correct columns", {
 })
 
 test_that(".null_na handles NULL and non-NULL correctly", {
-  expect_equal(rBMRB:::.null_na(NULL),  NA_character_)
-  expect_equal(rBMRB:::.null_na("abc"), "abc")
-  expect_equal(rBMRB:::.null_na(123),   "123")
+  expect_equal(RBMRB:::.null_na(NULL),  NA_character_)
+  expect_equal(RBMRB:::.null_na("abc"), "abc")
+  expect_equal(RBMRB:::.null_na(123),   "123")
 })
 
 test_that(".ensure_vector flattens single-element list", {
-  expect_equal(rBMRB:::.ensure_vector(list("a")), "a")
-  expect_equal(rBMRB:::.ensure_vector(c(1L, 2L, 3L)), c(1L, 2L, 3L))
+  expect_equal(RBMRB:::.ensure_vector(list("a")), "a")
+  expect_equal(RBMRB:::.ensure_vector(c(1L, 2L, 3L)), c(1L, 2L, 3L))
 })
 
 test_that(".is_metabolomics detects bmse prefix", {
-  expect_true(rBMRB:::.is_metabolomics("bmse000034"))
-  expect_true(rBMRB:::.is_metabolomics("BMSE000034"))
-  expect_false(rBMRB:::.is_metabolomics("15060"))
-  expect_false(rBMRB:::.is_metabolomics(15060))
+  expect_true(RBMRB:::.is_metabolomics("bmse000034"))
+  expect_true(RBMRB:::.is_metabolomics("BMSE000034"))
+  expect_false(RBMRB:::.is_metabolomics("15060"))
+  expect_false(RBMRB:::.is_metabolomics(15060))
 })
 
 test_that("bmrb_status returns a list", {
@@ -127,7 +127,7 @@ test_that("bmrb_status returns a list", {
     {
       s <- bmrb_status()
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_type(s, "list")
   expect_true("databases" %in% names(s))
@@ -143,7 +143,7 @@ test_that("bmrb_fetch_entry returns a named list", {
     {
       result <- bmrb_fetch_entry("15060")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_type(result, "list")
   expect_named(result, "15060")

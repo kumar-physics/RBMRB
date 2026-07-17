@@ -1,3 +1,3 @@
 library(testthat)
-library(rBMRB)
-test_check("rBMRB")
+library(RBMRB)
+test_check("RBMRB")

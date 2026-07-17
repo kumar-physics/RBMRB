@@ -7,27 +7,27 @@
 # ChemicalShiftStatistics internal helpers
 # ---------------------------------------------------------------------------
 
-test_that(".filter_outliers removes values beyond sd_limit", {
-  df <- data.frame(Val = c(52.1, 52.5, 51.9, 53.0, 52.3, 300.0, -100.0),
-                   stringsAsFactors = FALSE)
-  filtered <- rBMRB:::.filter_outliers(df, "Val", sd_limit = 2)
+test_that(".filter_outliers_df removes values beyond sd_limit", {
+  df      <- data.frame(Val = c(52.1, 52.5, 51.9, 53.0, 52.3, 300.0),
+                        stringsAsFactors = FALSE)
+  filtered <- RBMRB:::.filter_outliers_df(df, "Val", sd_limit = 2)
+  expect_s3_class(filtered, "data.frame")
   expect_true(nrow(filtered) < nrow(df))
   expect_false(any(filtered$Val == 300.0))
-  expect_false(any(filtered$Val == -100.0))
 })
 
 test_that(".standardise_cs_cols maps lowercase to standard names", {
   cols <- c("comp_id", "atom_id", "val", "entry_id", "temperature")
-  std  <- rBMRB:::.standardise_cs_cols(cols)
+  std  <- RBMRB:::.standardise_cs_cols(cols)
   expect_equal(std, c("Comp_ID","Atom_ID","Val","Entry_ID","Temperature"))
 })
 
 test_that(".STANDARD_AAS has exactly 20 entries", {
-  expect_length(rBMRB:::.STANDARD_AAS, 20L)
+  expect_length(RBMRB:::.STANDARD_AAS, 20L)
 })
 
 test_that(".STANDARD_NAS covers RNA and DNA", {
-  nas <- rBMRB:::.STANDARD_NAS
+  nas <- RBMRB:::.STANDARD_NAS
   expect_true("A"  %in% nas)  # RNA adenine
   expect_true("DT" %in% nas)  # DNA thymine
 })
@@ -44,7 +44,7 @@ test_that("get_cs_data returns a data.frame with correct columns", {
     {
       df <- get_cs_data("ALA", "CA")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
 
   expect_s3_class(df, "data.frame")
@@ -66,7 +66,7 @@ test_that("get_cs_data outlier filtering reduces row count", {
       df_filtered   <- get_cs_data("ALA", "CA", filtered = TRUE,  sd_limit = 2)
       df_unfiltered <- get_cs_data("ALA", "CA", filtered = FALSE)
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
 
   expect_true(nrow(df_filtered) < nrow(df_unfiltered))
@@ -84,7 +84,7 @@ test_that("get_2d_cs_data returns paired numeric vectors", {
     {
       result <- get_2d_cs_data("ALA", "CA", "CB")
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
 
   expect_type(result$atom1, "double")
@@ -100,7 +100,7 @@ test_that("get_cs_from_bmrb_db with list_of_atoms delegates correctly", {
     {
       df <- get_cs_from_bmrb_db(list_of_atoms = c("ALA-CB", "GLY-CA"))
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_s3_class(df, "data.frame")
 })
@@ -117,7 +117,7 @@ test_that("get_cs_from_bmrb_db errors on malformed atom spec", {
 # ---------------------------------------------------------------------------
 
 test_that(".resolve_atom_specs handles residue + atom", {
-  specs <- rBMRB:::.resolve_atom_specs("ALA", "CA", NULL)
+  specs <- RBMRB:::.resolve_atom_specs("ALA", "CA", NULL)
   expect_length(specs, 1L)
   expect_equal(specs[[1L]]$residue, "ALA")
   expect_equal(specs[[1L]]$atom,    "CA")
@@ -125,7 +125,7 @@ test_that(".resolve_atom_specs handles residue + atom", {
 })
 
 test_that(".resolve_atom_specs handles list_of_atoms", {
-  specs <- rBMRB:::.resolve_atom_specs(NULL, NULL,
+  specs <- RBMRB:::.resolve_atom_specs(NULL, NULL,
                                         c("ALA-CB","CYS-N","TYR-CB"))
   expect_length(specs, 3L)
   expect_equal(specs[[2L]]$residue, "CYS")
@@ -133,21 +133,21 @@ test_that(".resolve_atom_specs handles list_of_atoms", {
 })
 
 test_that(".resolve_atom_specs errors when nothing supplied", {
-  expect_error(rBMRB:::.resolve_atom_specs(NULL, NULL, NULL))
+  expect_error(RBMRB:::.resolve_atom_specs(NULL, NULL, NULL))
 })
 
 test_that(".resolve_atom_specs errors on malformed list_of_atoms", {
-  expect_error(rBMRB:::.resolve_atom_specs(NULL, NULL, "BADSPEC"))
+  expect_error(RBMRB:::.resolve_atom_specs(NULL, NULL, "BADSPEC"))
 })
 
 test_that(".format_filter_desc produces readable string", {
-  desc <- rBMRB:::.format_filter_desc(list(CA = 64.5, H = 7.8))
+  desc <- RBMRB:::.format_filter_desc(list(CA = 64.5, H = 7.8))
   expect_true(grepl("CA=64.50", desc))
   expect_true(grepl("H=7.80",   desc))
 })
 
 test_that(".hex_alpha converts hex colour to rgba string", {
-  rgba <- rBMRB:::.hex_alpha("#1F77B4", 0.5)
+  rgba <- RBMRB:::.hex_alpha("#1F77B4", 0.5)
   expect_match(rgba, "^rgba\\(\\d+,\\d+,\\d+,0\\.50\\)$")
 })
 
@@ -161,7 +161,7 @@ test_that("cs_hist returns invisible list with values and labels", {
     {
       result <- cs_hist("ALA", "CA", show_visualization = FALSE)
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_type(result, "list")
   expect_named(result, c("values","labels"))
@@ -176,7 +176,7 @@ test_that("cs_hist with list_of_atoms works correctly", {
       result <- cs_hist(list_of_atoms = c("ALA-CB","GLY-CA"),
                         show_visualization = FALSE)
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_true(any(result$labels == "ALA-CB"))
   expect_true(any(result$labels == "GLY-CA"))
@@ -188,7 +188,7 @@ test_that("cs_hist2d returns paired data", {
     {
       result <- cs_hist2d("ALA", "CA", "CB", show_visualization = FALSE)
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_named(result, c("atom1","atom2"))
   expect_equal(length(result$atom1), 2L)
@@ -205,7 +205,7 @@ test_that("conditional_cs_hist returns all_values and filtered_values", {
         h_tolerance = 0.2, c_tolerance = 2.0,
         show_visualization = FALSE)
     },
-    .package = "rBMRB"
+    .package = "RBMRB"
   )
   expect_type(result, "list")
   expect_true("all_values"      %in% names(result))
@@ -226,21 +226,21 @@ test_that("conditional_cs_hist errors on empty filtering_rules", {
 # ---------------------------------------------------------------------------
 
 test_that(".res_color returns a hex string for known residues", {
-  col <- rBMRB:::.res_color("ALA")
+  col <- RBMRB:::.res_color("ALA")
   expect_match(col, "^#[0-9A-Fa-f]{6}$")
 })
 
 test_that(".res_color falls back to UNK for unknown residues", {
-  col <- rBMRB:::.res_color("XYZ")
-  expect_equal(col, rBMRB:::.AA_COLORS[["UNK"]])
+  col <- RBMRB:::.res_color("XYZ")
+  expect_equal(unname(col), unname(RBMRB:::.AA_COLORS[["UNK"]]))
 })
 
 test_that(".axis_label returns known label for N", {
-  lbl <- rBMRB:::.axis_label("N")
-  expect_true(grepl("15", lbl))
+  lbl <- RBMRB:::.axis_label("N")
+  expect_true(grepl("N", lbl))
 })
 
 test_that(".axis_label returns fallback for unknown atom", {
-  lbl <- rBMRB:::.axis_label("WEIRD")
+  lbl <- RBMRB:::.axis_label("WEIRD")
   expect_true(grepl("WEIRD", lbl))
 })

@@ -5,9 +5,9 @@ Date: 2026-07-16
 Authors@R: person(
     given   = "Kumaran",
     family  = "Baskaran",
-    email   = "kumaran.baskaran@wisc.edu",
+    email   = "baskaran@uchc.edu",
     role    = c("aut", "cre"),
-    comment = c(ORCID = "0000-0000-0000-0000"))
+    comment = c(ORCID = "0000-0002-0418-0286"))
 Description: A comprehensive R interface to the Biological Magnetic Resonance
     Data Bank (BMRB) <https://bmrb.io>, mirroring all functionality of the
     PyBMRB Python package (v3.0). Provides four modules: (1) ChemicalShift
@@ -18,20 +18,18 @@ Description: A comprehensive R interface to the Biological Magnetic Resonance
     and (4) Histogram for chemical shift distribution visualizations with
     optional filtering by pH, temperature, and ambiguity code.
     All interactive plots are rendered via 'plotly'.
-    Uses the BMRB REST API v2 <https://api.bmrb.io/v2>.
+    Uses the BMRB REST API v2 <https://api.bmrb.io/v2/>.
 License: GPL-3
-URL: https://github.com/uwbmrb/RBMRB
-BugReports: https://github.com/uwbmrb/RBMRB/issues
+URL: https://github.com/bmrb-io/RBMRB
+BugReports: https://github.com/bmrb-io/RBMRB/issues
 Encoding: UTF-8
 LazyData: false
-RoxygenNote: 7.3.2
 Depends:
     R (>= 4.1.0)
 Imports:
     httr2 (>= 1.0.0),
     jsonlite (>= 1.8.0),
     plotly (>= 4.10.0),
-    ggplot2 (>= 3.4.0),
     cli (>= 3.4.0)
 Suggests:
     testthat (>= 3.0.0),
@@ -41,3 +39,4 @@ Suggests:
     withr
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+Config/roxygen2/version: 8.0.0
