@@ -1,0 +1,82 @@
+# =============================================================================
+# TEST COVERAGE — RBMRB
+# Measures test coverage with {covr} and uploads to Codecov.
+# Runs on push to main/master and on pull requests.
+# Add CODECOV_TOKEN secret in GitHub → Settings → Secrets → Actions.
+# =============================================================================
+
+name: test-coverage
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    name: Code coverage
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT:          ${{ secrets.GITHUB_TOKEN }}
+      CODECOV_TOKEN:       ${{ secrets.CODECOV_TOKEN }}
+      R_KEEP_PKG_SOURCE:   yes
+      NOT_CRAN:            true     # allows network calls in tests
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Set up R (release)
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+
+      - name: Cache R packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ubuntu-r-release-coverage-${{ hashFiles('DESCRIPTION') }}
+
+      - name: Install dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            any::covr
+            any::testthat
+            any::xml2
+
+      - name: Run test coverage
+        run: |
+          covr::codecov(
+            quiet   = FALSE,
+            clean   = TRUE,
+            install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package")
+          )
+        shell: Rscript {0}
+
+      - name: Upload coverage report to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token:    ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+
+      - name: Upload coverage data artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ${{ runner.temp }}/package
