@@ -1,8 +1,6 @@
 # RBMRB <img src="man/figures/logo.png" align="right" height="139"/>
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/kumar-physics/RBMRB/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/kumar-physics/RBMRB/actions/workflows/R-CMD-check.yaml)
-[![Codecov](https://codecov.io/gh/kumar-physics/RBMRB/graph/badge.svg)](https://codecov.io/gh/kumar-physics/RBMRB)
 [![CRAN status](https://www.r-pkg.org/badges/version/RBMRB)](https://CRAN.R-project.org/package=RBMRB)
 <!-- badges: end -->
 
